@@ -13,6 +13,7 @@ int main() {
         ")"
     };
 
+
     printf("Final: %d\n", isValid(tokens, 7));
 
     return 0;
