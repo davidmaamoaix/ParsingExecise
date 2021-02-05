@@ -23,12 +23,15 @@ typedef struct Json {
 } Json;
 
 typedef struct Parser {
+    int error;
     const char *next;
     const char *end;
 } Parser;
 
 Json *parseJson(const char *, int);
 
-Json *obj(const char *next);
+Json *obj(Parser *);
+
+void match(Parser *, char);
 
 #endif //PARSINGEXERCISE_JSONPARSER_H
