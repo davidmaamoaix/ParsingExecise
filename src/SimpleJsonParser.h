@@ -11,19 +11,24 @@
 #define ARRAY 4
 #define OBJ 5
 
-// difference of type between key and value is
-// enforced programmatically
 typedef struct Elem {
     unsigned char type;
     void *data;
 } Elem;
 
 typedef struct Json {
-    Elem *keys;
+    char **keys;
     Elem *values;
     int length;
 } Json;
 
-Json *parseJson(const char *);
+typedef struct Parser {
+    const char *next;
+    const char *end;
+} Parser;
+
+Json *parseJson(const char *, int);
+
+Json *obj(const char *next);
 
 #endif //PARSINGEXERCISE_JSONPARSER_H
