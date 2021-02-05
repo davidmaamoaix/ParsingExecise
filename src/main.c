@@ -1,20 +1,11 @@
 #include <stdio.h>
 
-#include "RecursiveDescent.h"
+#include "SimpleJsonParser.h"
 
 int main() {
-    Token tokens[] = {
-        "5",
-        "*",
-        "(",
-        "728",
-        "+",
-        "52",
-        ")"
-    };
+    const char *foo = "{}";
 
-
-    printf("Final: %d\n", isValid(tokens, 7));
+    Json *json = parseJson(foo, 2);
 
     return 0;
 }
