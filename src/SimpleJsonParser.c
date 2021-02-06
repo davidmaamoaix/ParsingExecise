@@ -47,7 +47,7 @@ Json *obj(Parser *parser) {
 /*
  * optStatements -> EPSILON | statement | statement, statements
  *
- * FIRST(statement) = '"'
+ * FIRST(statement) = {'"'}
  */
 void optStatements(Parser *parser, Json *json) {
     if (*parser->next == '"') {
@@ -96,10 +96,15 @@ void appendJson(Json *json, char *key, Elem elem) {
 
 Elem element(Parser *parser) {
     Elem elem = {ERROR, NULL};
+    char next = *parser->next;
 
-    if (*parser->next == '"') {
+    if (next == '"') {
         elem.type = STR;
         elem.data = STR_TOKEN(parser);
+    } else if (next >= 48 && next <= 57) {
+        elem.type = INT;
+        elem.data = malloc(sizeof(int));
+        *((int *) elem.data) = INT_TOKEN(parser);
     }
 
     return elem;
@@ -111,8 +116,13 @@ char *STR_TOKEN(Parser *parser) {
     char *key = malloc(sizeof(char) * MAX_KEY_LENGTH);
     int index = 0;
 
-    while (*parser->next != '"') {
+    while (*parser->next != '"' && parser->next != parser->end) {
         key[index++] = *(parser->next++);
+    }
+
+    if (parser->next == parser->end) {
+        parser->error = 1;
+        printf("EOF reached while parsing string element\n");
     }
 
     key[index] = '\0';
@@ -120,4 +130,22 @@ char *STR_TOKEN(Parser *parser) {
     match(parser, '"');
 
     return key;
+}
+
+/*
+ * FOLLOW(elem) = {',', '}'}
+ */
+int INT_TOKEN(Parser *parser) {
+    int value = 0;
+
+    while (*parser->next != ',' && *parser->next != '}' && parser->next != parser->end) {
+        value = value * 10 + *(parser->next++);
+    }
+
+    if (parser->next == parser->end) {
+        parser->error = 1;
+        printf("EOF reached while parsing integer element\n");
+    }
+
+    return value;
 }

@@ -5,7 +5,7 @@
 #include "SimpleJsonParser.h"
 
 int main() {
-    const char *foo = "{\"a\":\"a b\",\"a\":\"a b\",\"a\":\"a b\",\"a\":\"a b\",\"a\":\"a b\",\"a\":\"a b\"}";
+    const char *foo = "{\"a\":32123123,\"a\":\"a b\",\"a\":12}";
 
     Json *json = parseJson(foo, (int) strlen(foo));
 
