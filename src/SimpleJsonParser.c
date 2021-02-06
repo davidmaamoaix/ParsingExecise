@@ -20,6 +20,7 @@ Json *parseJson(const char *input, int length) {
 
 Json *obj(Parser *parser) {
     Json *json = malloc(sizeof(Json));
+    json->length = 0;
     json->keys = malloc(sizeof(char *) * MAX_JSON_LENGTH);
     json->values =  malloc(sizeof(Elem) * MAX_JSON_LENGTH);
 
@@ -69,6 +70,10 @@ void statements(Parser *parser, Json *json) {
 
 void statement(Parser *parser, Json *json) {
      char *key = STR_TOKEN(parser);
+     match(parser, ':');
+     Elem value = element(parser);
+
+     appendJson(json, key, value);
 }
 
 void match(Parser *parser, const char token) {
@@ -79,22 +84,40 @@ void match(Parser *parser, const char token) {
         printf("EOF reached!\n");
     } else if (*(parser->next++) != token) {
         parser->error = 1;
-        printf("Expected: %c; instead got %c\n", token, *(parser->next - 1));
+        printf("Expected: '%c'; instead got '%c'\n", token, *(parser->next - 1));
     }
 }
 
-void appendJson(Json *json, char *type, Elem *elem) {
-    json->keys[json->length] = type;
+void appendJson(Json *json, char *key, Elem elem) {
+    json->keys[json->length] = key;
     json->values[json->length] = elem;
     ++json->length;
+}
+
+Elem element(Parser *parser) {
+    Elem elem = {ERROR, NULL};
+
+    if (*parser->next == '"') {
+        elem.type = STR;
+        elem.data = STR_TOKEN(parser);
+    }
+
+    return elem;
 }
 
 char *STR_TOKEN(Parser *parser) {
     match(parser, '"');
 
-    /*while (*parser->next != '"') {
+    char *key = malloc(sizeof(char) * MAX_KEY_LENGTH);
+    int index = 0;
 
-    }*/
+    while (*parser->next != '"') {
+        key[index++] = *(parser->next++);
+    }
+
+    key[index] = '\0';
 
     match(parser, '"');
+
+    return key;
 }

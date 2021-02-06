@@ -19,9 +19,9 @@ typedef struct Elem {
 } Elem;
 
 typedef struct Json {
-    char **keys;
-    Elem **values;
     int length;
+    char **keys;
+    Elem *values;
 } Json;
 
 typedef struct Parser {
@@ -38,8 +38,9 @@ void statements(Parser *, Json *);
 void statement(Parser *, Json *);
 
 void match(Parser *, char);
-void appendJson(Json *, char *, Elem *);
+void appendJson(Json *, char *, Elem);
 
+Elem element(Parser *);
 char *STR_TOKEN(Parser *);
 
 #endif //PARSINGEXERCISE_JSONPARSER_H
