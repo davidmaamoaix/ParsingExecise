@@ -215,7 +215,8 @@ int INT_TOKEN(Parser *parser) {
 
     int value = 0;
 
-    while (*parser->next != ',' && *parser->next != '}' && parser->next != parser->end) {
+    // TODO: fix this since space can occur before following set
+    while (*parser->next >= 48 && *parser->next <= 57 && parser->next != parser->end) {
         value = value * 10 + *(parser->next++);
     }
 
