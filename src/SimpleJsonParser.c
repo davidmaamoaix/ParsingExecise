@@ -8,6 +8,7 @@
 Json *parseJson(const char *input, int length) {
     Parser *parser = malloc(sizeof(Parser));
     parser->error = 0;
+    parser->start = input;
     parser->next = input;
     parser->end = input + length;
 
@@ -73,8 +74,8 @@ void match(Parser *parser, const char token) {
         printf("EOF reached!\n");
     } else if (*(parser->next++) != token) {
         parser->error = 1;
-        printf("Expected: '%c'; instead got '%c'", token, *(parser->next - 1));
-        printf("(Position %ld)\n", parser->end - parser->next);
+        printf("Expected: '%c'; instead got '%c' ", token, *(parser->next - 1));
+        printf("(at position %ld)\n", parser->next - parser->start);
     }
 }
 

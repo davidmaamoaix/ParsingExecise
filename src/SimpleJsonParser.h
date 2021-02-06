@@ -27,6 +27,7 @@ typedef struct Json {
 
 typedef struct Parser {
     int error;
+    const char *start;
     const char *next;
     const char *end;
 } Parser;
