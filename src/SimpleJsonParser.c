@@ -11,7 +11,7 @@ Json *parseJson(const char *input, int length) {
 
     Json *output = obj(parser);
 
-    if (parser->error != 0) {
+    if (parser->error) {
         printf("Whelp %d", parser->error); // TODO: meaningful msgs
     }
 
@@ -24,17 +24,33 @@ Json *obj(Parser *parser) {
     json->values =  malloc(sizeof(Elem) * MAX_LENGTH);
 
     match(parser, '{');
+    statements(parser, json);
     match(parser, '}');
 
-    if (parser->error) return NULL;
+    if (parser->error) {
+        free(json->keys);
+        free(json->values);
+        free(json);
+
+        return NULL;
+    }
 
     return json;
+}
+
+void statements(Parser *parser, Json *json) {
+
 }
 
 void match(Parser *parser, const char token) {
     if (parser->error) return;
     if (parser->next == parser->end || *(parser->next++) != token) {
-        printf("wat");
         parser->error = 1;
     }
+}
+
+void appendJson(Json *json, char *type, Elem *elem) {
+    json->keys[json->length] = type;
+    json->values[json->length] = elem;
+    ++json->length;
 }

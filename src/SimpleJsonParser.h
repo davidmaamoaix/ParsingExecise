@@ -5,6 +5,7 @@
 
 #define MAX_LENGTH 256
 
+#define ERROR 0
 #define INT 1
 #define BOOL 2
 #define STR 3
@@ -18,7 +19,7 @@ typedef struct Elem {
 
 typedef struct Json {
     char **keys;
-    Elem *values;
+    Elem **values;
     int length;
 } Json;
 
@@ -31,7 +32,9 @@ typedef struct Parser {
 Json *parseJson(const char *, int);
 
 Json *obj(Parser *);
+void statements(Parser *, Json *);
 
 void match(Parser *, char);
+void appendJson(Json *, char *, Elem *);
 
 #endif //PARSINGEXERCISE_JSONPARSER_H
