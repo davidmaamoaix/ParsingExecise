@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#define WHITE(x) x == ' ' || x == '\n' || x == '\t'
+
 Json *parseJson(const char *input, int length) {
     Parser *parser = malloc(sizeof(Parser));
     parser->error = 0;
@@ -29,6 +31,7 @@ Json *parseJson(const char *input, int length) {
  * FIRST(statement) = {'"'}
  */
 void optStatements(Parser *parser, Json *json) {
+    stripWhitespace(parser);
     if (*parser->next == '"') {
         statements(parser, json);
     }
@@ -41,6 +44,7 @@ void statements(Parser *parser, Json *json) {
 
     statement(parser, json);
 
+    stripWhitespace(parser);
     if (*parser->next == ',') {
         match(parser, ',');
         statements(parser, json);
@@ -49,10 +53,16 @@ void statements(Parser *parser, Json *json) {
 
 void statement(Parser *parser, Json *json) {
      char *key = STR_TOKEN(parser);
-     match(parser, ':');
+     stripMatch(parser, ':');
      Elem value = element(parser);
 
      appendJson(json, key, value);
+}
+
+void stripWhitespace(Parser *parser) {
+    while (WHITE(*parser->next))  {
+        ++parser->next;
+    }
 }
 
 void match(Parser *parser, const char token) {
@@ -63,8 +73,14 @@ void match(Parser *parser, const char token) {
         printf("EOF reached!\n");
     } else if (*(parser->next++) != token) {
         parser->error = 1;
-        printf("Expected: '%c'; instead got '%c'\n", token, *(parser->next - 1));
+        printf("Expected: '%c'; instead got '%c'", token, *(parser->next - 1));
+        printf("(Position %ld)\n", parser->end - parser->next);
     }
+}
+
+void stripMatch(Parser *parser, const char token) {
+    stripWhitespace(parser);
+    match(parser, token);
 }
 
 void appendJson(Json *json, char *key, Elem elem) {
@@ -75,6 +91,7 @@ void appendJson(Json *json, char *key, Elem elem) {
 
 Elem element(Parser *parser) {
     Elem elem = {ERROR, NULL};
+    stripWhitespace(parser);
     char next = *parser->next;
 
     if (next == '"') {
@@ -105,9 +122,9 @@ Json *obj(Parser *parser) {
     json->keys = malloc(sizeof(char *) * MAX_JSON_LENGTH);
     json->values =  malloc(sizeof(Elem) * MAX_JSON_LENGTH);
 
-    match(parser, '{');
+    stripMatch(parser, '{');
     optStatements(parser, json);
-    match(parser, '}');
+    stripMatch(parser, '}');
 
     if (parser->error) {
         free(json->keys);
@@ -125,9 +142,9 @@ Array *array(Parser *parser) {
     array->length = 0;
     array->values = malloc(sizeof (Elem *) * MAX_ARRAY_LENGTH);
 
-    match(parser, '[');
+    stripMatch(parser, '[');
     optElements(parser, array);
-    match(parser, ']');
+    stripMatch(parser, ']');
 
     if (parser->error) {
         free(array->values);
@@ -140,6 +157,7 @@ Array *array(Parser *parser) {
 }
 
 void optElements(Parser *parser, Array *array) {
+    stripWhitespace(parser);
     char next = *parser->next;
 
     // FIRST(elem) = {FIRST(STR), FIRST(INT), FIRST(OBJ), FIRST(BOOL), FIRST(ARRAY)}
@@ -153,14 +171,21 @@ void elements(Parser *parser, Array *array) {
 
     array->values[array->length++] = element(parser);
 
+    stripWhitespace(parser);
     if (*parser->next == ',') {
         match(parser, ',');
         elements(parser, array);
     }
 }
 
+/*
+ * Stripping is done once in the element grammar already;
+ * however, the token grammar is also used elsewhere.
+ *
+ * Therefore we strip despite the redundant element stripping.
+ */
 char *STR_TOKEN(Parser *parser) {
-    match(parser, '"');
+    stripMatch(parser, '"');
 
     char *key = malloc(sizeof(char) * MAX_KEY_LENGTH);
     int index = 0;
@@ -185,6 +210,8 @@ char *STR_TOKEN(Parser *parser) {
  * FOLLOW(elem) = {',', '}'}
  */
 int INT_TOKEN(Parser *parser) {
+    stripWhitespace(parser);
+
     int value = 0;
 
     while (*parser->next != ',' && *parser->next != '}' && parser->next != parser->end) {
@@ -200,6 +227,8 @@ int INT_TOKEN(Parser *parser) {
 }
 
 int BOOL_TOKEN(Parser *parser) {
+    stripWhitespace(parser);
+
     int value = 0;
 
     if (*parser->next == 't') {

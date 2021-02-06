@@ -1,1 +1,59 @@
-{"name":"John","age":43726482,"male":true,"father":{"name":"Will","age":438743,"male":true},"siblings":3}
+{
+  "name": "John",
+  "age": 43726482,
+  "male": true,
+  "father": {
+    "name": "Will",
+    "age": 438743,
+    "male": true
+  },
+  "siblings": [
+    {
+      "name": "Will",
+      "age": 438743,
+      "male": true
+    },
+    {
+      "name": "Will",
+      "age": 438743,
+      "male": true
+    },
+    {
+      "name": "Will",
+      "age": 438743,
+      "male": true
+    },
+    {
+      "name": "John",
+      "age": 43726482,
+      "male": true,
+      "father": {
+        "name": "Will",
+        "age": 438743,
+        "male": true
+      },
+      "siblings": [
+        {
+          "name": "Will",
+          "age": 438743,
+          "male": true
+        },
+        {
+          "name": "Will",
+          "age": 438743,
+          "male": true
+        },
+        {
+          "name": "Will",
+          "age": 438743,
+          "male": true
+        }
+      ]
+    }
+  ],
+  "texts": [
+    "a",
+    "b",
+    "c"
+  ]
+}

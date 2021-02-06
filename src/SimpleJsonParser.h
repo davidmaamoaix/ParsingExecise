@@ -42,7 +42,9 @@ void optStatements(Parser *, Json *);
 void statements(Parser *, Json *);
 void statement(Parser *, Json *);
 
+void stripWhitespace(Parser *);
 void match(Parser *, char);
+void stripMatch(Parser *, char);
 void appendJson(Json *, char *, Elem);
 
 Elem element(Parser *);
