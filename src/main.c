@@ -3,9 +3,11 @@
 #include <string.h>
 
 #include "SimpleJsonParser.h"
+#include "testing.h"
 
 int main() {
-    const char *foo = "{\"a\":32123123,\"a\":\"a b\",\"a\":12}";
+    const char *foo = "{\"a\":32123123,\"a\":\"a b\",\"a\":true}";
+    char *jsonStr = readFile("texts/json_sample.json");
 
     Json *json = parseJson(foo, (int) strlen(foo));
 

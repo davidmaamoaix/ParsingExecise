@@ -1,0 +1,6 @@
+#ifndef PARSINGEXERCISE_TESTING_H
+#define PARSINGEXERCISE_TESTING_H
+
+char *readFile(const char *);
+
+#endif //PARSINGEXERCISE_TESTING_H

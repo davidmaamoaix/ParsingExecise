@@ -149,3 +149,23 @@ int INT_TOKEN(Parser *parser) {
 
     return value;
 }
+
+int BOOL_TOKEN(Parser *parser) {
+    int value = 0;
+
+    if (*parser->next == 't') {
+        match(parser, 't');
+        match(parser, 'r');
+        match(parser, 'u');
+        match(parser, 'e');
+        value = 1;
+    } else {
+        match(parser, 'f');
+        match(parser, 'a');
+        match(parser, 'l');
+        match(parser, 's');
+        match(parser, 'e');
+    } // no other case, as checked in element
+
+    return value;
+}

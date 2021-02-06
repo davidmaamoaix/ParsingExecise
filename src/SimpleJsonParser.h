@@ -43,5 +43,6 @@ void appendJson(Json *, char *, Elem);
 Elem element(Parser *);
 char *STR_TOKEN(Parser *);
 int INT_TOKEN(Parser *);
+int BOOL_TOKEN(Parser *);
 
 #endif //PARSINGEXERCISE_JSONPARSER_H
