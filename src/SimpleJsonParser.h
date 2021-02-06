@@ -4,6 +4,7 @@
 // A simple JSON parser.
 
 #define MAX_JSON_LENGTH 256
+#define MAX_ARRAY_LENGTH 256
 #define MAX_KEY_LENGTH 64
 
 #define ERROR 0
@@ -30,9 +31,13 @@ typedef struct Parser {
     const char *end;
 } Parser;
 
+typedef struct Array {
+    int length;
+    Elem *values;
+} Array;
+
 Json *parseJson(const char *, int);
 
-Json *obj(Parser *);
 void optStatements(Parser *, Json *);
 void statements(Parser *, Json *);
 void statement(Parser *, Json *);
@@ -41,8 +46,13 @@ void match(Parser *, char);
 void appendJson(Json *, char *, Elem);
 
 Elem element(Parser *);
+Json *obj(Parser *);
+Array *array(Parser *);
+void optElements(Parser *, Array *);
+void elements(Parser *, Array *);
 char *STR_TOKEN(Parser *);
 int INT_TOKEN(Parser *);
 int BOOL_TOKEN(Parser *);
+
 
 #endif //PARSINGEXERCISE_JSONPARSER_H

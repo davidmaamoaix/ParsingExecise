@@ -9,7 +9,7 @@ int main() {
     const char *foo = "{\"a\":32123123,\"a\":\"a b\",\"a\":true}";
     char *jsonStr = readFile("texts/json_sample.json");
 
-    Json *json = parseJson(foo, (int) strlen(foo));
+    Json *json = parseJson(jsonStr, (int) strlen(jsonStr));
 
     return 0;
 }

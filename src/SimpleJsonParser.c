@@ -11,37 +11,16 @@ Json *parseJson(const char *input, int length) {
 
     Json *output = obj(parser);
 
-    if (parser->error) {
-        printf("Syntax Error: %d", parser->error); // TODO: meaningful msgs
-    }
-
-    return output;
-}
-
-Json *obj(Parser *parser) {
-    Json *json = malloc(sizeof(Json));
-    json->length = 0;
-    json->keys = malloc(sizeof(char *) * MAX_JSON_LENGTH);
-    json->values =  malloc(sizeof(Elem) * MAX_JSON_LENGTH);
-
-    match(parser, '{');
-    optStatements(parser, json);
-    match(parser, '}');
-
     if (!parser->error && parser->next != parser->end) {
         parser->error = 1;
         printf("JSON ended %ld characters early\n", parser->end - parser->next);
     }
 
     if (parser->error) {
-        free(json->keys);
-        free(json->values);
-        free(json);
-
-        return NULL;
+        printf("Syntax Error: %d", parser->error); // TODO: meaningful msgs
     }
 
-    return json;
+    return output;
 }
 
 /*
@@ -105,9 +84,79 @@ Elem element(Parser *parser) {
         elem.type = INT;
         elem.data = malloc(sizeof(int));
         *((int *) elem.data) = INT_TOKEN(parser);
+    } else if (next == 't' || next == 'f') {
+        elem.type = BOOL;
+        elem.data = malloc(sizeof(int));
+        *((int *) elem.data) = BOOL_TOKEN(parser);
+    } else if (next == '{') {
+        elem.type = OBJ;
+        elem.data = obj(parser);
+    } else if (next == '[') {
+        elem.type = ARRAY;
+        elem.data = array(parser);
     }
 
     return elem;
+}
+
+Json *obj(Parser *parser) {
+    Json *json = malloc(sizeof(Json));
+    json->length = 0;
+    json->keys = malloc(sizeof(char *) * MAX_JSON_LENGTH);
+    json->values =  malloc(sizeof(Elem) * MAX_JSON_LENGTH);
+
+    match(parser, '{');
+    optStatements(parser, json);
+    match(parser, '}');
+
+    if (parser->error) {
+        free(json->keys);
+        free(json->values);
+        free(json);
+
+        return NULL;
+    }
+
+    return json;
+}
+
+Array *array(Parser *parser) {
+    Array *array = malloc(sizeof(Array));
+    array->length = 0;
+    array->values = malloc(sizeof (Elem *) * MAX_ARRAY_LENGTH);
+
+    match(parser, '[');
+    optElements(parser, array);
+    match(parser, ']');
+
+    if (parser->error) {
+        free(array->values);
+        free(array);
+
+        return NULL;
+    }
+
+    return array;
+}
+
+void optElements(Parser *parser, Array *array) {
+    char next = *parser->next;
+
+    // FIRST(elem) = {FIRST(STR), FIRST(INT), FIRST(OBJ), FIRST(BOOL), FIRST(ARRAY)}
+    int nonInt = next == '"' || next == '{' || next == 't' || next == 'f' || next == '[';
+    if (nonInt || (next >= 48 && next <= 57)) {
+        elements(parser, array);
+    }
+}
+
+void elements(Parser *parser, Array *array) {
+
+    array->values[array->length++] = element(parser);
+
+    if (*parser->next == ',') {
+        match(parser, ',');
+        elements(parser, array);
+    }
 }
 
 char *STR_TOKEN(Parser *parser) {

@@ -17,9 +17,10 @@ char *readFile(const char *path) {
     size = (unsigned long) ftell(f);
 
     fseek(f, 0, SEEK_SET);
-    buf = malloc(size * sizeof(char));
+    buf = malloc((size + 1) * sizeof(char));
     fread(buf, sizeof(char), size, f);
     fclose(f);
 
+    buf[size] = '\0';
     return buf;
 }
