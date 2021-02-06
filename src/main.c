@@ -4,9 +4,9 @@
 #include "SimpleJsonParser.h"
 
 int main() {
-    const char *foo = "{a}";
+    const char *foo = "{\"a\",\"a\"}";
 
-    Json *json = parseJson(foo, 2);
+    Json *json = parseJson(foo, 9);
 
     return 0;
 }

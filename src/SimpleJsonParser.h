@@ -32,7 +32,9 @@ typedef struct Parser {
 Json *parseJson(const char *, int);
 
 Json *obj(Parser *);
+void optStatements(Parser *, Json *);
 void statements(Parser *, Json *);
+void statement(Parser *, Json *);
 
 void match(Parser *, char);
 void appendJson(Json *, char *, Elem *);

@@ -12,7 +12,7 @@ Json *parseJson(const char *input, int length) {
     Json *output = obj(parser);
 
     if (parser->error) {
-        printf("Whelp %d", parser->error); // TODO: meaningful msgs
+        printf("Syntax Error: %d", parser->error); // TODO: meaningful msgs
     }
 
     return output;
@@ -24,8 +24,13 @@ Json *obj(Parser *parser) {
     json->values =  malloc(sizeof(Elem) * MAX_LENGTH);
 
     match(parser, '{');
-    statements(parser, json);
+    optStatements(parser, json);
     match(parser, '}');
+
+    if (parser->next != parser->end) {
+        parser->error = 1;
+        printf("JSON ended %ld characters early\n", parser->end - parser->next);
+    }
 
     if (parser->error) {
         free(json->keys);
@@ -38,14 +43,41 @@ Json *obj(Parser *parser) {
     return json;
 }
 
-void statements(Parser *parser, Json *json) {
+/*
+ * optStatements -> EPSILON | statement | statement, statements
+ *
+ * FIRST(statement) = '"'
+ */
+void optStatements(Parser *parser, Json *json) {
+    if (*parser->next == '"') {
+        statements(parser, json);
+    }
+}
 
+void statements(Parser *parser, Json *json) {
+    statement(parser, json);
+
+    if (*parser->next == ',') {
+        match(parser, ',');
+        statements(parser, json);
+    }
+}
+
+void statement(Parser *parser, Json *json) {
+    match(parser, '"');
+    match(parser, 'a');
+    match(parser, '"');
 }
 
 void match(Parser *parser, const char token) {
     if (parser->error) return;
-    if (parser->next == parser->end || *(parser->next++) != token) {
+
+    if (parser->next == parser->end) {
         parser->error = 1;
+        printf("EOF reached!\n");
+    } else if (*(parser->next++) != token) {
+        parser->error = 1;
+        printf("Expected: %c; instead got %c\n", token, *(parser->next - 1));
     }
 }
 
