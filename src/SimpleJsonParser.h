@@ -3,7 +3,8 @@
 
 // A simple JSON parser.
 
-#define MAX_LENGTH 256
+#define MAX_JSON_LENGTH 256
+#define MAX_KEY_LENGTH 64
 
 #define ERROR 0
 #define INT 1
@@ -38,5 +39,7 @@ void statement(Parser *, Json *);
 
 void match(Parser *, char);
 void appendJson(Json *, char *, Elem *);
+
+char *STR_TOKEN(Parser *);
 
 #endif //PARSINGEXERCISE_JSONPARSER_H
